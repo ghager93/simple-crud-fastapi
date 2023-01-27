@@ -14,3 +14,10 @@ class Simple(SQLModel, table=True):
 class SimpleCreate(SQLModel):
     name: str
     number: int
+
+
+class SimpleOut(SQLModel):
+    name: str
+    number: int
+    created_at: datetime
+    updated_at: datetime
