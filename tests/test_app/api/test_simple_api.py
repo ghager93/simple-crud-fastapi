@@ -39,5 +39,6 @@ def test_post_saved_to_db(test_client: TestClient, test_db: Session):
 
     result = test_db.query(Simple).filter(Simple.name == valid_payload["name"]).first()
 
-    assert result == valid_payload
+    assert result.name == valid_payload["name"]
+    assert result.number == valid_payload["number"]
 
