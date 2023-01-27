@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.models import Simple
+from app.models import SimpleCreate
 
 router = APIRouter(prefix="/api")
 
@@ -11,5 +11,5 @@ async def hello_world():
 
 
 @router.post("/simple/")
-async def create_simple(simple: Simple):
+async def create_simple(simple: SimpleCreate):
     return simple
