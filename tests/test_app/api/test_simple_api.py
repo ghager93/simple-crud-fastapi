@@ -28,17 +28,37 @@ def test_hello_world(test_client: TestClient):
 
 
 def test_post_returns_2xx(test_client: TestClient):
-    result = test_client.post("api/simple", json={})
+    result = test_client.post("api/simple", json=valid_payload)
 
     assert 200 <= result.status_code < 300
 
 
 def test_post_saved_to_db(test_client: TestClient, test_db: Session):
     from app.models import Simple
+
     test_client.post("api/simple", json=valid_payload)
 
     result = test_db.query(Simple).filter(Simple.name == valid_payload["name"]).first()
 
     assert result.name == valid_payload["name"]
     assert result.number == valid_payload["number"]
+
+
+def test_post_invalid_4xx_status(test_client: TestClient):
+    """Test invalid post returns correct code."""
+    result = test_client.post("/simple/", json=invalid_payload)
+
+    assert 400 <= result.status_code < 500
+
+
+def test_post_invalid_not_saved_to_db(test_client: TestClient, test_db: Session):
+    """Test invalid entry is not saved to db."""
+    from app.models import Simple
+
+    test_client.post("/simple/", json=invalid_payload)
+    result = test_db.query(Simple).filter(Simple.name == valid_payload["name"]).all()
+
+    assert result == []
+
+
 
