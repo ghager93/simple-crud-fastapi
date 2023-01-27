@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from datetime import datetime
 from fastapi import APIRouter, Depends
@@ -25,8 +25,12 @@ async def create_simple(*, session: Session = Depends(get_session), simple_creat
         updated_at=timestamp
     )
     
-    # with Session(engine) as session:
     session.add(simple)
     session.commit()
 
     return simple
+
+
+@router.get("/simple/", response_model=List[SimpleOut])
+async def get_all_simple(*, session: Session = Depends(get_session)):
+    return session.query(Simple).all()
