@@ -104,4 +104,28 @@ def test_get_all_three_return(test_client: TestClient):
 
     assert sorted(_pop_datetimes(result.json()), key=lambda x: x["name"]) == sorted(
         valid_payloads, key=lambda x: x["name"]
-    )    
+    )
+
+
+def test_get_valid_id_2xx_status(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.get("api/simple/0")
+
+    assert 200 <= result.status_code < 300 
+
+
+def test_get_invalid_id_404_status(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.get("api/simple/1")
+
+    assert result.status_code == 404
+
+
+def test_get_valid_id(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.get("api/simple/0")
+
+    assert _pop_datetimes(result.json()) == valid_payload
