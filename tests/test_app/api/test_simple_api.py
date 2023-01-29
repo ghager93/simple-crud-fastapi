@@ -137,3 +137,21 @@ def test_delete_valid_id_2xx_status(test_client: TestClient):
     result = test_client.delete("api/simple/1")
 
     assert 200 <= result.status_code < 300
+
+
+def test_delete_invalid_id_404_status(test_client: TestClient):
+    test_client.post("api/simple", json=invalid_payload)
+
+    result = test_client.delete("api/simple/2")
+
+    assert result.status_code == 404
+
+
+def test_delete_valid_id(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    first_result = test_client.delete("api/simple/1")
+    second_result = test_client.delete("api/simple/1")
+
+    assert _pop_datetimes(first_result.json()) == valid_payload
+    assert second_result.status_code == 404
