@@ -21,3 +21,8 @@ class SimpleOut(SQLModel):
     number: int
     created_at: datetime
     updated_at: datetime
+
+
+class SimpleUpdate(SQLModel):
+    name: Optional[str]
+    number: Optional[str]

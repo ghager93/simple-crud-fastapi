@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from fastapi.exceptions import HTTPException 
 
-from app.models import SimpleCreate, Simple, SimpleOut
+from app.models import SimpleCreate, Simple, SimpleOut, SimpleUpdate
 from app.db import engine, get_session
 
 router = APIRouter(prefix="/api")
@@ -57,6 +57,23 @@ async def delete_simple(*, session: Session = Depends(get_session), id: int):
 
     if result:
         session.delete(result)
+        session.commit()
+        return result
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Element not found."
+    )
+
+
+@router.patch("/simple/{id}", response_model=SimpleOut)
+async def patch_simple(*, session: Session = Depends(get_session), id: int, simple_update: SimpleUpdate):
+    result = session.query(Simple).filter_by(id=id).first()
+
+    if result:
+        update_dict = simple_update.dict(exclude_unset=True)
+        [setattr(result, attr, value) for attr, value in update_dict.items()]
+        session.add(result)
         session.commit()
         return result
 

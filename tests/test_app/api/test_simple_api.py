@@ -140,7 +140,7 @@ def test_delete_valid_id_2xx_status(test_client: TestClient):
 
 
 def test_delete_invalid_id_404_status(test_client: TestClient):
-    test_client.post("api/simple", json=invalid_payload)
+    test_client.post("api/simple", json=valid_payload)
 
     result = test_client.delete("api/simple/2")
 
@@ -155,3 +155,43 @@ def test_delete_valid_id(test_client: TestClient):
 
     assert _pop_datetimes(first_result.json()) == valid_payload
     assert second_result.status_code == 404
+    
+
+def test_patch_valid_id_2xx_status(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.patch("api/simple/1", json=patched_name_payload)
+
+    assert 200 <= result.status_code < 300
+
+
+def test_patch_invalid_id_404_status(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.patch("api/simple/2", json=patched_name_payload)
+
+    assert result.status_code == 404
+
+
+def test_patch_valid_id_patch_name(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result_patch = test_client.patch("api/simple/1", json=patched_name_payload)
+    result_get = test_client.get("api/simple/1")
+
+    assert result_patch.json()["name"] == patched_name_payload["name"]
+    assert result_patch.json()["number"] == valid_payload["number"]
+    assert result_get.json()["name"] == patched_name_payload["name"]
+    assert result_get.json()["number"] == valid_payload["number"]
+
+
+def test_patch_valid_id_patch_number(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result_patch = test_client.patch("api/simple/1", json=patched_number_payload)
+    result_get = test_client.get("api/simple/1")
+
+    assert result_patch.json()["name"] == valid_payload["name"]
+    assert result_patch.json()["number"] == patched_number_payload["number"]
+    assert result_get.json()["name"] == valid_payload["name"]
+    assert result_get.json()["number"] == patched_number_payload["number"]
