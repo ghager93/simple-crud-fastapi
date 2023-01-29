@@ -44,7 +44,22 @@ async def get_simple(*, session: Session = Depends(get_session), id: int):
 
     if result:
         return result
-        
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Element not found."
+    )
+
+
+@router.delete("/simple/{id}", response_model=SimpleOut)
+async def delete_simple(*, session: Session = Depends(get_session), id: int):
+    result = session.query(Simple).filter_by(id=id).first()
+
+    if result:
+        session.delete(result)
+        session.commit()
+        return result
+
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Element not found."

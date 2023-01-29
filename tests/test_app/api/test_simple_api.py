@@ -129,3 +129,11 @@ def test_get_valid_id(test_client: TestClient):
     result = test_client.get("api/simple/1")
 
     assert _pop_datetimes(result.json()) == valid_payload
+
+
+def test_delete_valid_id_2xx_status(test_client: TestClient):
+    test_client.post("api/simple", json=valid_payload)
+
+    result = test_client.delete("api/simple/1")
+
+    assert 200 <= result.status_code < 300
